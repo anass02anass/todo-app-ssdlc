@@ -1,0 +1,31 @@
+services:
+  app:
+    build:
+      context: .
+      target: production
+    image: todo-app-ssdlc:latest
+    container_name: todo-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      # Volumen dedicado para datos — el resto del sistema de archivos es de solo lectura
+      - todo-data:/app/data
+    # Opciones de seguridad adicionales
+    security_opt:
+      - no-new-privileges:true  # Impide escalada de privilegios
+    read_only: true              # Sistema de archivos de solo lectura
+    tmpfs:
+      - /tmp                     # Directorio temporal en memoria
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  todo-data:
+    driver: local

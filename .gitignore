@@ -1,0 +1,30 @@
+# Variables de entorno — NUNCA subir al repositorio
+.env
+
+# Dependencias
+node_modules/
+
+# Base de datos local
+*.db
+*.db-shm
+*.db-wal
+data/
+
+# Logs
+*.log
+logs/
+
+# Reportes de seguridad (pueden contener información sensible)
+reports/zap-report.*
+reports/trivy-report.*
+
+# Artefactos de construcción
+dist/
+build/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/

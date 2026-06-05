@@ -1,0 +1,31 @@
+services:
+  # Servicio de la aplicación en modo test
+  app-test:
+    build:
+      context: .
+      target: builder   # Incluye dependencias de dev para ejecutar tests
+    container_name: todo-app-test
+    environment:
+      NODE_ENV: test
+      PORT: 3000
+      SESSION_SECRET: test-secret-only-for-ci
+      DB_PATH: /tmp/test.db
+    command: npm test
+    volumes:
+      - /tmp:/tmp
+
+  # Escáner DAST con OWASP ZAP
+  zap:
+    image: ghcr.io/zaproxy/zaproxy:stable
+    container_name: todo-zap
+    depends_on:
+      app-test:
+        condition: service_healthy
+    command: >
+      zap-baseline.py
+      -t http://app-test:3000
+      -c /zap/wrk/zap-baseline.conf
+      -r /zap/wrk/zap-report.html
+    volumes:
+      - ./tests/security:/zap/wrk
+      - ./reports:/zap/wrk/reports
